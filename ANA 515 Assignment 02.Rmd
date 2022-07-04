@@ -1,0 +1,112 @@
+---
+title: "ANA 515 Assignment 02"
+author: "Rashmitha Pasupureddy"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    theme:
+      bootswatch: darkly
+---
+
+<center>
+
+<img src="https://www.pngall.com/wp-content/uploads/12/One-Ring-PNG-File.png"/>
+
+</center>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Description
+
+This dataset consists of script from all Lord of the Rings Trilogy - Fellowship of the Rings, Two Towers and Return of the King. This dataset has 2390 observations for 4 variables. It was collected from <https://www.kaggle.com/datasets/paultimothymooney/lord-of-the-rings-data>. The dataset decribes the script for each character and which movie it is from. The dataset is a delimited flat file while the delimiter is a space
+
+## Loading Packages
+
+```{r load-packages, echo=TRUE, message=FALSE, warning=FALSE}
+
+    library(tidyverse)  
+    library(dplyr)  
+    library(knitr)  
+    library(bslib)  
+    library(readr)
+    library(stringr)
+    library(DT)
+
+```
+
+## Reading the data with read.csv function from the package readr
+
+```{r read, echo=TRUE}
+
+        lotr <- read.csv("C:/Users/rashm/Desktop/ANA 515 Fundamentals of Data Storage/LOTR/lotr_scripts.csv")
+
+```
+
+## Cleaning/Pre-Processing Data
+
+```{r clean, echo=TRUE, message=FALSE, warning=FALSE, paged.print=TRUE, results='hide'}
+
+    lotr_df <- lotr %>%
+        rename(character_name = char) #Renaming the column char to character_name 
+        str_to_title(lotr_df$character_name) #Converting the character names to title case
+        trimws(lotr_df$dialog) #I have noticed some of the dialogues have a leading white space. So, we're trimming it
+
+
+        ## I have hidden the output for this code chunk as it produces a large amount of data. Below is another chunk of code with data table to format it 
+        
+        
+```
+
+```{r output, echo=TRUE}
+
+        datatable(lotr_df, rownames=TRUE, filter="top", options=list(pageLength=6, scrollX=T)) #This is reduce the number of rows shown in the output
+
+
+```
+
+## Characteristics of Data
+
+```{r, echo=TRUE}
+        
+        observations <- nrow(lotr_df)
+        variables <- ncol(lotr_df)
+
+```
+
+This data frame has `r observations` rows and `r variables` columns. The names of the columns and a brief description of each are in the table below:
+
+## Table
+
+```{r, echo=TRUE}
+
+        kable(str(lotr_df))
+
+
+```
+
+## Summary Statistics
+
+```{r, echo=TRUE}
+
+#Since my data set only has one variable with numeric values, I chose to apply the required functions to it
+
+
+    FrodoFilter <- filter(lotr_df, character_name=="FRODO")
+    FrodoMin <- min(FrodoFilter$X)
+    FrodoMax <- max(FrodoFilter$X)
+    FrodoMean <- mean(FrodoFilter$X)
+    FrodoMV <- colSums(is.na(FrodoFilter))
+    summary(FrodoFilter) #Using summary function
+
+```
+
+## Saving summary stats
+
+```{r, echo=TRUE, results='markup'}
+
+    FrodoSummary <- data.frame(FrodoMin, FrodoMax, FrodoMean, FrodoMV)
+    print(FrodoSummary)
+
+```
